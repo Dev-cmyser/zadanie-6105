@@ -1,0 +1,47 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    container_name: app
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./:/app
+    command: npm run start:dev
+    networks:
+      - external
+
+  db:
+    image: postgres:15
+    container_name: db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - external
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_
+    environment:
+      PGADMIN_DEFAULT_EMAIL: adm@mail.ru
+      PGADMIN_DEFAULT_PASSWORD: adm
+    ports:
+      - '5051:80'
+    depends_on:
+      - db
+    networks:
+      - external
+
+volumes:
+  pgdata:
+
+networks:
+  external:
+    external: true
